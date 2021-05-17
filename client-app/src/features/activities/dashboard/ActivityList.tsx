@@ -1,19 +1,19 @@
-import React, { SyntheticEvent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import React, {  useState } from 'react';
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
-import { Activity } from '../../../app/models/activity';
-interface Props {
-    activities: Activity[];
-    selectActivity: (id: string) => void;
-    deleteActivity: (id: string) => void;
-    submitting: boolean;
-}
-export default function ActivityList({activities, selectActivity, deleteActivity, submitting}: Props){
+import { useStore } from '../../../app/stores/store';
+
+export default observer( function ActivityList(){
+    const {activityStore} = useStore();
+    const {deleteActivity, activities, loading} = activityStore;
     const [target, setTarget] = useState("");
+    
     function handleActivityDelete(e: any, id: string){
         setTarget(e.currentTarget.name);
         deleteActivity(id);
 
     }
+   
     return (
         <Segment>
             <Item.Group divided>
@@ -36,10 +36,10 @@ export default function ActivityList({activities, selectActivity, deleteActivity
                             </Item.Description>
                             
                             <Item.Extra>
-                                <Button onClick={() => selectActivity(activity.id)} floated="right" content="View" color="blue" ></Button>
+                                <Button onClick={() => activityStore.selectActivity(activity.id)} floated="right" content="View" color="blue" ></Button>
                                 <Button
                                     name={activity.id}
-                                    loading={submitting && target === activity.id} 
+                                    loading={loading && target === activity.id} 
                                     onClick={(e) => handleActivityDelete(e,activity.id)}
                                     floated="right" 
                                     content="Delete" 
@@ -55,4 +55,4 @@ export default function ActivityList({activities, selectActivity, deleteActivity
         </Segment>
     )
 
-}
+})
